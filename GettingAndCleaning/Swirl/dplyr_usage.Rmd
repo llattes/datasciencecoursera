@@ -1,0 +1,70 @@
+---
+title: "Usage of dplyr"
+author: "llattes"
+date: "March 1, 2015"
+output: html_document
+---
+
+# Usage of dplyr package
+
+## Exercises from swirl lessons
+
+```{r}
+# Read the a CRAN downloads log file corresponding to a single day.
+mydf <- read.csv(file = "2014-07-08.csv", stringsAsFactors = FALSE)
+dim(mydf)
+head(mydf)
+library(dplyr)
+packageVersion("dplyr") # Check installed version of a package.
+cran <- tbl_df(mydf)
+rm("mydf")
+cran
+# dplyr's select specific columns or ranges (in the given order).
+select(cran, ip_id, package, country)
+select(cran, r_arch:country)
+select(cran, country:r_arch)
+# Select all columns except for 'time'.
+select(cran, -time)
+select(cran, -(X:size))
+# Filter rows of a given tbl_df
+filter(cran, package == "swirl")
+filter(cran, r_version == "3.1.1", country == "US")
+filter(cran, r_version <= "3.0.2", country == "IN")
+filter(cran, country == "US" | country == "IN")
+filter(cran, size > 100500, r_os == "linux-gnu")
+# Can use boolean functions to filter.
+filter(cran, !is.na(r_version))
+cran2 <- select(cran, size:ip_id)
+# dplyr's arrange sorts the dataset by the given columns
+arrange(cran2, ip_id)
+arrange(cran2, desc(ip_id))
+arrange(cran2, package, ip_id)
+arrange(cran2, country, desc(r_version), ip_id)
+cran3 <- select(cran, ip_id, package, size)
+cran3
+# Can unse mutate to add columns based in existing ones.
+mutate(cran3, size_mb = size / 2^20)
+mutate(cran3, size_mb = size / 2^20, size_gb = size_mb / 2^10)
+mutate(cran3, correct_size = size + 1000)
+summarize(cran, avg_bytes = mean(size))
+cran
+# Group the 'cran' dataset by package to summarize based on that column.
+by_package <- group_by(cran, package)
+by_package
+summarize(by_package, mean(size))
+source('~/DataScience/datasciencecoursera/GettingAndCleaning/Swirl/summarize1.R')
+pack_sum
+quantile(pack_sum$count, probs = 0.99)
+filter(pack_sum, count > 679)
+top_counts <- filter(pack_sum, count > 679)
+top_counts
+head(top_counts, 20)
+arrange(pack_sum, desc(count))
+arrange(top_counts, desc(count))
+arrange(pack_sum, desc(count))[43, ]
+quantile(pack_sum$unique, probs = 0.99)
+top_unique <- filter(pack_sum, unique > 465)
+top_unique
+arrange(top_unique, desc(unique))
+source('~/DataScience/datasciencecoursera/GettingAndCleaning/Swirl/chain4.R')
+````

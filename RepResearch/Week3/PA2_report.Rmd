@@ -1,0 +1,99 @@
+---
+title: "Programming Assignment 2 - Reproducible Research"
+author: "llattes"
+output: html_document
+---
+
+# Severe weather events and their consequences
+
+## Synopsis
+
+The __National Climatic Data Center__ receives Storm Data from the National Weather Service. This data is available to public [here](http://www.nws.noaa.gov/directives/).
+
+Storm Data is an official publication of the National Oceanic and Atmospheric Administration (NOAA) which documents:
+
+- The occurrence of storms and other significant weather phenomena having sufficient intensity to cause loss of life, injuries, significant property damage, and/or disruption to commerce;
+- Rare, unusual, weather phenomena that generate media attention, such as snow flurries in South Florida or the San Diego coastal area; and
+- Other significant meteorological events, such as record maximum or minimum temperatures or precipitation that occur in connection with another event.
+
+The **goal of the following analysis** is to process the __NCDC__ data to evaluate the consequences of the weather phenomena in the population health and the economy. The focus will be set in trying to isolate from this **900000+** observations (weather events) dataset the most harmful events in terms of health and economic damage. The results will be an useful tool for competent authorities to set priorities and assign resources to mitigate the damages caused by this storms.
+
+## Data processing
+
+```{r, cache=TRUE}
+# Download and read data into a Data Frame.
+if (!file.exists("storm_data.bz2")) {
+  download.file(url = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2",
+    destfile = "storm_data.bz2", method = "curl")
+}
+storm_data <- read.csv(bzfile("storm_data.bz2"))
+```
+
+```{r}
+# Explore the dataset briefly
+names(storm_data)
+summary(storm_data$EVTYPE)
+```
+
+```{r, cache=TRUE}
+# Obtain datasets of injuries per event type.
+injuries_per_event <- aggregate(INJURIES ~ EVTYPE, storm_data, FUN = sum)
+injuries_per_event <- injuries_per_event[ order(injuries_per_event[, 2], decreasing = TRUE), ]
+injuries_per_event <- subset(x = injuries_per_event, subset = injuries_per_event$INJURIES > 0)
+# Obtain datasets of fatalities per event type.
+fatalities_per_event <- aggregate(FATALITIES ~ EVTYPE, storm_data, FUN = sum)
+fatalities_per_event <- fatalities_per_event[ order(fatalities_per_event[, 2], decreasing = TRUE), ]
+fatalities_per_event <- subset(x = fatalities_per_event, subset = fatalities_per_event$FATALITIES > 0)
+# List the top 10 categories to obtain a hint of the most harmful events.
+head(fatalities_per_event, n = 10)
+head(injuries_per_event, n = 10)
+```
+
+```{r plot_injuries, fig.width=12}
+library(ggplot2)
+ggplot(injuries_per_event[1:10, ], aes(x = EVTYPE, y = INJURIES, fill = EVTYPE)) +
+    geom_histogram(stat = "identity") + theme(legend.position = "none",
+        axis.text.x = element_text(angle = 90, hjust = 1)) + labs(x = "Event type",
+            y = "Total injuries", title = "Number of injuries per event type")
+```
+
+```{r plot_fatalities, fig.width=12}
+ggplot(fatalities_per_event[1:10, ], aes(x = EVTYPE, y = FATALITIES, fill = EVTYPE)) +
+    geom_histogram(stat = "identity") + theme(legend.position = "none",
+        axis.text.x = element_text(angle = 90, hjust = 1)) + labs(x = "Event type",
+            y = "Total fatalities", title = "Number of fatalities per event type")
+```
+
+```{r, cache=TRUE}
+# To simplify the analysis, we keep the events that cause damage in Millions (U$S).
+highest_damage <- subset(storm_data, subset = storm_data$CROPDMGEXP == "M" | storm_data$PROPDMGEXP == "M")
+highest_damage_agg <- aggregate(CROPDMG + PROPDMG ~ EVTYPE, storm_data, FUN = sum)
+highest_damage_agg <- highest_damage_agg[ order(highest_damage_agg[, 2], decreasing = TRUE), ]
+highest_damage_agg <- subset(x = highest_damage_agg, subset = highest_damage_agg[, 2] > 0)
+names(highest_damage_agg)[names(highest_damage_agg) == "CROPDMG + PROPDMG"] <- "DAMAGE"
+# List the top 10 categories to obtain a hint of the events with greatest economic consequences.
+head(highest_damage_agg, n = 10)
+```
+
+
+```{r plot_damage, fig.width=12}
+ggplot(highest_damage_agg[1:10, ], aes(x = EVTYPE, y = DAMAGE, fill = EVTYPE)) +
+    geom_histogram(stat = "identity") + theme(legend.position = "none",
+        axis.text.x = element_text(angle = 90, hjust = 1)) + labs(x = "Event type",
+            y = "Total damage (in millions of U$S)", title = "Economic consequences of storm events")
+```
+
+## Results
+
+1. **TORNADOS** are, by far, the most dangerous events in terms of **fatalities (5633), injuries (91346) and economic damage (3312276.7 M)** in the United States.
+2. Other significant events in terms of economic damage (in descendent order) are: **FLASH FLOOD** (1599325.1 M), **TSTM WIND** (1445168.2 M), **HAIL** (1268289.7 M) and **FLOOD** (1067976.4 M).
+3. Regarding fatalities, after tornados, the most significant events are: **EXCESSIVE HEAT** (1903), **FLASH FLOOD** (978), **HEAT** (937) and **LIGHTNING** (816).
+4. In the case of injuries, the following are the events with the most cases **TSTM WIND** (6957), **FLOOD** (6789), **EXCESSIVE HEAT** (6525) and **LIGHTNING** (5230).
+5. Of the 985 types of storm events, 158 (`r 158 / 985` %) registered injuries, 168 (`r 168 / 985` %) registered fatalities and 431 (`r 431 / 985` %) registered significant (order of magnitude M - Millions U$S) economic damage.
+
+## Final thoughts
+
+- It's very important to focus the efforts in finding a way to reduce the impact of tornados in the population and the economy.
+- Floods of different types and TSTM winds are also worth keeping an eye on them.
+- Excessive heat seems to be very harmful for population but not so much for the economy, for that reason some kind of treatment is strongly recommended to avoid tragic consequences on people.
+- There are many types of events that, as shown in point 5 above, do not seem to cause huge losses. However an exhaustive analysis should be made before focusing exclusively in other kind of events because undesirable effects may arise.
