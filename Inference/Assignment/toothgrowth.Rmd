@@ -1,0 +1,117 @@
+---
+title: "Analysis of the ToothGrowth dataset"
+author: "Luciano Lattes"
+date: "June, 2015"
+output: html_document
+---
+
+For the second part of the Course Project I'm going to analyze the ToothGrowth data in the R datasets package.
+
+## Exploratory data analysis
+
+```{r, echo = FALSE} 
+data(ToothGrowth)
+n_obs <- dim(ToothGrowth)
+```
+
+This dataset describes the Effect of Vitamin C on Tooth Growth in Guinea Pigs. It consists in `r n_obs[1]` observations of `r n_obs[2]` variables. The vitamin C was delivered by two methods: Orange juice (OJ) or ascorbic acid (VC) in different dose levels.
+
+Let's take a look at the data to get familiarized with it:
+
+```{r}
+summary(ToothGrowth)
+# Display a random sample of rows in the dataset.
+ToothGrowth[sample(nrow(ToothGrowth), 10), ]
+```
+
+To have a better sense of what the data looks like, let's make a plot. I'll take advantage of the `supp` factor to make a faceted plot and try to see the relation between length and dose for each delivery method:
+
+```{r, echo=FALSE}
+library(ggplot2)
+plot <- ggplot(ToothGrowth, aes(len, dose, colour = factor(supp))) + geom_point()
+plot <- plot + facet_grid(supp ~ .)
+plot <- plot + ggtitle(label = "Length vs. dose, given type of supplement")
+plot <- plot + labs(x = "Length", y = "Dose")
+plot <- plot + theme(plot.title = element_text(lineheight = 1, face = "bold"))
+plot
+```
+
+Seems that the **orange juice** method has a bigger impact in the length of the tooth and that the values of the length are more concentrated around the mean in the case of **ascorbic acid** except for the 2 mg. dose, where this facts seem to be exactly the opposite. Let's try to confirm this numerically:
+
+- **Dose of 0.5 mg.:**
+```{r}
+mean(ToothGrowth[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 0.5, ]$len)
+mean(ToothGrowth[ToothGrowth$supp == "VC" & ToothGrowth$dose == 0.5, ]$len)
+```
+- **Dose of 1.0 mg.:**
+```{r}
+mean(ToothGrowth[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 1.0, ]$len)
+mean(ToothGrowth[ToothGrowth$supp == "VC" & ToothGrowth$dose == 1.0, ]$len)
+```
+- **Dose of 2.0 mg.:**
+```{r}
+mean(ToothGrowth[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 2.0, ]$len)
+mean(ToothGrowth[ToothGrowth$supp == "VC" & ToothGrowth$dose == 2.0, ]$len)
+```
+
+We can confirm that the **orange juice** method is more effective in terms of length for lower dose levels and **ascorbic acid** has a slightly bigger impact in length for the 2 mg. dose.
+
+## Confidence intervals
+
+For calculating the confidence intervals to compare tooth growth by supp and dose let's draw some convenient groups beforehand...
+
+```{r}
+oj_05 <- ToothGrowth[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 0.5, ]
+vc_05 <- ToothGrowth[ToothGrowth$supp == "VC" & ToothGrowth$dose == 0.5, ]
+oj_10 <- ToothGrowth[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 1.0, ]
+vc_10 <- ToothGrowth[ToothGrowth$supp == "VC" & ToothGrowth$dose == 1.0, ]
+oj_20 <- ToothGrowth[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 2.0, ]
+vc_20 <- ToothGrowth[ToothGrowth$supp == "VC" & ToothGrowth$dose == 2.0, ]
+```
+
+... and print them out.
+
+```{r}
+oj_05
+vc_05
+oj_10
+vc_10
+oj_20
+vc_20
+```
+
+Let's find the confidence interval for each pair of comparable groups using the **t-test**. The observations between the groups are naturally assumed to be statistically independent, so an independent group Student's T interval will be used instead of a paired one.
+
+```{r}
+tt05 <- t.test(oj_05$len, vc_05$len, paired = FALSE)
+tt05
+```
+
+```{r}
+tt10 <- t.test(oj_10$len, vc_10$len, paired = FALSE)
+tt10
+```
+
+```{r}
+tt20 <- t.test(oj_20$len, vc_20$len, paired = FALSE)
+tt20
+```
+
+- We can conclude that for dose of 0.5 mg., as the interval is above zero, **orange juice** is better than **ascorbic acid** in terms of tooth length: `r tt05$conf.int`.
+
+- Then, for dose of 1.0 mg., as the interval is above zero too, **orange juice** is better than **ascorbic acid** in terms of tooth length: `r tt10$conf.int`.
+
+- Finally, for dose of 2.0 mg., as the interval is almost symetric around zero (contains zero), suggesting **no difference** in terms of tooth length: `r tt20$conf.int`.
+
+### Further analysis
+
+Let's draw 2 bigger groups from the original `ToothGrowth` dataset, `OJ` and `VC`, and check the **t-test** results.
+
+```{r}
+oj <- ToothGrowth[ToothGrowth$supp == "OJ", ]
+vc <- ToothGrowth[ToothGrowth$supp == "VC", ]
+tt_by_method <- t.test(oj$len, vc$len, paired = FALSE)
+tt_by_method
+```
+
+The left side of the confidence interval `r tt_by_method$conf.int` is slightly under zero, showing the influence of the **ascorbic acid** method for 2.0 mg. dose in this more general analysis.
