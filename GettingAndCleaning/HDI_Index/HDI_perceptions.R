@@ -36,7 +36,7 @@ overall$countryOrdered <- reorder(overall$country, desc(overall$perceptions_of_i
 # Calculate the overall mean of life satisfaction.
 overallSatisMean <- mean(final_dataset$perceptions_of_individual_well_being_overall_life_satisfaction_index_0_least_satisfied_10_most_satisfied_2007_2012, na.rm = TRUE)
 # Draw a plot with top 12 rank, overall mean and HDI rank.
-ggplot(data = overall, aes(x = countryOrdered, y = perceptions_of_individual_well_being_overall_life_satisfaction_index_0_least_satisfied_10_most_satisfied_2007_2012, ymax = max(perceptions_of_individual_well_being_overall_life_satisfaction_index_0_least_satisfied_10_most_satisfied_2007_2012), fill = hdi_classification)) + 
+ggplot(data = overall, aes(x = countryOrdered, y = perceptions_of_individual_well_being_overall_life_satisfaction_index_0_least_satisfied_10_most_satisfied_2007_2012, ymax = max(perceptions_of_individual_well_being_overall_life_satisfaction_index_0_least_satisfied_10_most_satisfied_2007_2012), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label=perceptions_of_individual_well_being_overall_life_satisfaction_index_0_least_satisfied_10_most_satisfied_2007_2012), position = position_dodge(width = 0.9), vjust = 10) +
@@ -45,7 +45,7 @@ ggplot(data = overall, aes(x = countryOrdered, y = perceptions_of_individual_wel
   scale_y_continuous(breaks = seq(from = 5, to = 10, by = 0.2)) +
   xlab("Country") + ylab("Perception index (0: Least satisf. - 10: Most satisf.)") +
   ggtitle("Overall life satisfaction") +
-  geom_hline(yintercept = overallSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = overallSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 3, 5.6, label = "Global satisfaction average", colour = "black", fontface = "bold")
 
 # Explore perception about government: Select top 12
@@ -59,7 +59,7 @@ government$countryOrdered <- reorder(government$country, desc(government$percept
 
 governmentSatisMean <- mean(final_dataset$perceptions_about_government_trust_in_national_government_satisfied_2007_2013, na.rm = TRUE)
 
-ggplot(data = government, aes(x = countryOrdered, y = perceptions_about_government_trust_in_national_government_satisfied_2007_2013, ymax = max(perceptions_about_government_trust_in_national_government_satisfied_2007_2013), fill = hdi_classification)) + 
+ggplot(data = government, aes(x = countryOrdered, y = perceptions_about_government_trust_in_national_government_satisfied_2007_2013, ymax = max(perceptions_about_government_trust_in_national_government_satisfied_2007_2013), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_about_government_trust_in_national_government_satisfied_2007_2013), position = position_dodge(width = 0.9), vjust = 20) +
@@ -68,7 +68,7 @@ ggplot(data = government, aes(x = countryOrdered, y = perceptions_about_governme
   scale_y_continuous(breaks = seq(from = 40, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Government trust") +
-  geom_hline(yintercept = governmentSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = governmentSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 3, 50, label = "Government trust average", colour = "black", fontface = "bold")
 
 # Explore perception about education quality: Select top 12
@@ -82,7 +82,7 @@ education$countryOrdered <- reorder(education$country, desc(education$perception
 
 educationSatisMean <- mean(final_dataset$perceptions_of_individual_well_being_education_quality_satisfied_2012, na.rm = TRUE)
 
-ggplot(data = education, aes(x = countryOrdered, y = perceptions_of_individual_well_being_education_quality_satisfied_2012, ymax = max(perceptions_of_individual_well_being_education_quality_satisfied_2012), fill = hdi_classification)) + 
+ggplot(data = education, aes(x = countryOrdered, y = perceptions_of_individual_well_being_education_quality_satisfied_2012, ymax = max(perceptions_of_individual_well_being_education_quality_satisfied_2012), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_of_individual_well_being_education_quality_satisfied_2012), position = position_dodge(width = 0.9), vjust = 20) +
@@ -91,7 +91,7 @@ ggplot(data = education, aes(x = countryOrdered, y = perceptions_of_individual_w
   scale_y_continuous(breaks = seq(from = 55, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Education quality satisfaction") +
-  geom_hline(yintercept = educationSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = educationSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 3.5, 61, label = "Education quality satisfaction average", colour = "black", fontface = "bold")
 
 # Explore job satisfaction: Select top 12
@@ -105,7 +105,7 @@ jobs$countryOrdered <- reorder(jobs$country, desc(jobs$perceptions_of_individual
 
 jobsSatisMean <- mean(final_dataset$perceptions_of_individual_well_being_job_satisfied_2007_2012, na.rm = TRUE)
 
-ggplot(data = jobs, aes(x = countryOrdered, y = perceptions_of_individual_well_being_job_satisfied_2007_2012, ymax = max(perceptions_of_individual_well_being_job_satisfied_2007_2012), fill = hdi_classification)) + 
+ggplot(data = jobs, aes(x = countryOrdered, y = perceptions_of_individual_well_being_job_satisfied_2007_2012, ymax = max(perceptions_of_individual_well_being_job_satisfied_2007_2012), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_of_individual_well_being_job_satisfied_2007_2012), position = position_dodge(width = 0.9), vjust = 15) +
@@ -114,7 +114,7 @@ ggplot(data = jobs, aes(x = countryOrdered, y = perceptions_of_individual_well_b
   scale_y_continuous(breaks = seq(from = 55, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Job satisfaction") +
-  geom_hline(yintercept = jobsSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = jobsSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 3.5, 72, label = "Global job satisfaction average", colour = "black", fontface = "bold")
 
 # Explore local labour market satisfaction: Select top 12
@@ -128,7 +128,7 @@ market$countryOrdered <- reorder(market$country, desc(market$perceptions_about_c
 
 marketSatisMean <- mean(final_dataset$perceptions_about_community_local_labour_market_answering_good_2007_2012, na.rm = TRUE)
 
-ggplot(data = market, aes(x = countryOrdered, y = perceptions_about_community_local_labour_market_answering_good_2007_2012, ymax = max(perceptions_about_community_local_labour_market_answering_good_2007_2012), fill = hdi_classification)) + 
+ggplot(data = market, aes(x = countryOrdered, y = perceptions_about_community_local_labour_market_answering_good_2007_2012, ymax = max(perceptions_about_community_local_labour_market_answering_good_2007_2012), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_about_community_local_labour_market_answering_good_2007_2012), position = position_dodge(width = 0.9), vjust = 15) +
@@ -137,7 +137,7 @@ ggplot(data = market, aes(x = countryOrdered, y = perceptions_about_community_lo
   scale_y_continuous(breaks = seq(from = 20, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Local labour market satisfaction") +
-  geom_hline(yintercept = marketSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = marketSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 4, 30, label = "Local labour market satisfaction average", colour = "black", fontface = "bold")
 
 # Explore perception about community: Select top 12
@@ -151,7 +151,7 @@ community$countryOrdered <- reorder(community$country, desc(community$perception
 
 communitySatisMean <- mean(final_dataset$perceptions_about_community_community_answering_yes_2007_2012, na.rm = TRUE)
 
-ggplot(data = community, aes(x = countryOrdered, y = perceptions_about_community_community_answering_yes_2007_2012, ymax = max(perceptions_about_community_community_answering_yes_2007_2012), fill = hdi_classification)) + 
+ggplot(data = community, aes(x = countryOrdered, y = perceptions_about_community_community_answering_yes_2007_2012, ymax = max(perceptions_about_community_community_answering_yes_2007_2012), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_about_community_community_answering_yes_2007_2012), position = position_dodge(width = 0.9), vjust = 15) +
@@ -160,7 +160,7 @@ ggplot(data = community, aes(x = countryOrdered, y = perceptions_about_community
   scale_y_continuous(breaks = seq(from = 65, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Perceptions about community") +
-  geom_hline(yintercept = communitySatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = communitySatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 4, 76, label = "Perceptions about community average", colour = "black", fontface = "bold")
 
 # Explore perception about freedom of choice: Select top 12
@@ -174,7 +174,7 @@ freedom$countryOrdered <- reorder(freedom$country, desc(freedom$perceptions_of_i
 
 freedomSatisMean <- mean(final_dataset$perceptions_of_individual_well_being_freedom_of_choice_satisfied_2007_2012, na.rm = TRUE)
 
-ggplot(data = freedom, aes(x = countryOrdered, y = perceptions_of_individual_well_being_freedom_of_choice_satisfied_2007_2012, ymax = max(perceptions_of_individual_well_being_freedom_of_choice_satisfied_2007_2012), fill = hdi_classification)) + 
+ggplot(data = freedom, aes(x = countryOrdered, y = perceptions_of_individual_well_being_freedom_of_choice_satisfied_2007_2012, ymax = max(perceptions_of_individual_well_being_freedom_of_choice_satisfied_2007_2012), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_of_individual_well_being_freedom_of_choice_satisfied_2007_2012), position = position_dodge(width = 0.9), vjust = 20) +
@@ -183,7 +183,7 @@ ggplot(data = freedom, aes(x = countryOrdered, y = perceptions_of_individual_wel
   scale_y_continuous(breaks = seq(from = 65, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Perceptions about freedom of choice") +
-  geom_hline(yintercept = freedomSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = freedomSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 4, 68, label = "Perceptions about freedom of choice average", colour = "black", fontface = "bold")
 
 # Explore perception about safety: Select top 12
@@ -197,7 +197,7 @@ safety$countryOrdered <- reorder(safety$country, desc(safety$perceptions_of_indi
 
 safetySatisMean <- mean(final_dataset$perceptions_of_individual_well_being_safety_answering_yes_2007_2012, na.rm = TRUE)
 
-ggplot(data = safety, aes(x = countryOrdered, y = perceptions_of_individual_well_being_safety_answering_yes_2007_2012, ymax = max(perceptions_of_individual_well_being_safety_answering_yes_2007_2012), fill = hdi_classification)) + 
+ggplot(data = safety, aes(x = countryOrdered, y = perceptions_of_individual_well_being_safety_answering_yes_2007_2012, ymax = max(perceptions_of_individual_well_being_safety_answering_yes_2007_2012), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_of_individual_well_being_safety_answering_yes_2007_2012), position = position_dodge(width = 0.9), vjust = 20) +
@@ -206,7 +206,7 @@ ggplot(data = safety, aes(x = countryOrdered, y = perceptions_of_individual_well
   scale_y_continuous(breaks = seq(from = 50, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Perceptions about safety") +
-  geom_hline(yintercept = safetySatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = safetySatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 4, 60, label = "Perceptions about safety average", colour = "black", fontface = "bold")
 
 # Explore perception about standard of living: Select top 12
@@ -220,7 +220,7 @@ standard$countryOrdered <- reorder(standard$country, desc(standard$perceptions_o
 
 standardSatisMean <- mean(final_dataset$perceptions_of_individual_well_being_standard_of_living_satisfied_2007_2013, na.rm = TRUE)
 
-ggplot(data = standard, aes(x = countryOrdered, y = perceptions_of_individual_well_being_standard_of_living_satisfied_2007_2013, ymax = max(perceptions_of_individual_well_being_standard_of_living_satisfied_2007_2013), fill = hdi_classification)) + 
+ggplot(data = standard, aes(x = countryOrdered, y = perceptions_of_individual_well_being_standard_of_living_satisfied_2007_2013, ymax = max(perceptions_of_individual_well_being_standard_of_living_satisfied_2007_2013), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_of_individual_well_being_standard_of_living_satisfied_2007_2013), position = position_dodge(width = 0.9), vjust = 20) +
@@ -229,7 +229,7 @@ ggplot(data = standard, aes(x = countryOrdered, y = perceptions_of_individual_we
   scale_y_continuous(breaks = seq(from = 50, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Perceptions about standard of living") +
-  geom_hline(yintercept = standardSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = standardSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 4, 56, label = "Perceptions about standard of living average", colour = "black", fontface = "bold")
 
 # Explore perception about government dealing with the poor: Select top 12
@@ -243,7 +243,7 @@ dealWithPoor$countryOrdered <- reorder(dealWithPoor$country, desc(dealWithPoor$p
 
 dealWithPoorSatisMean <- mean(final_dataset$perceptions_about_government_efforts_to_deal_with_the_poor_satisfied_2007_2013, na.rm = TRUE)
 
-ggplot(data = dealWithPoor, aes(x = countryOrdered, y = perceptions_about_government_efforts_to_deal_with_the_poor_satisfied_2007_2013, ymax = max(perceptions_about_government_efforts_to_deal_with_the_poor_satisfied_2007_2013), fill = hdi_classification)) + 
+ggplot(data = dealWithPoor, aes(x = countryOrdered, y = perceptions_about_government_efforts_to_deal_with_the_poor_satisfied_2007_2013, ymax = max(perceptions_about_government_efforts_to_deal_with_the_poor_satisfied_2007_2013), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_about_government_efforts_to_deal_with_the_poor_satisfied_2007_2013), position = position_dodge(width = 0.9), vjust = 20) +
@@ -252,7 +252,7 @@ ggplot(data = dealWithPoor, aes(x = countryOrdered, y = perceptions_about_govern
   scale_y_continuous(breaks = seq(from = 30, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Perceptions about government dealing with the poor") +
-  geom_hline(yintercept = dealWithPoorSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = dealWithPoorSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 4, 35.5, label = "Dealing with poor perception average", colour = "black", fontface = "bold")
 
 # Explore perception about government preserving environment: Select top 12
@@ -266,7 +266,7 @@ envPreservation$countryOrdered <- reorder(envPreservation$country, desc(envPrese
 
 envPreservationSatisMean <- mean(final_dataset$perceptions_about_government_actions_to_preserve_the_environment_satisfied_2007_2013, na.rm = TRUE)
 
-ggplot(data = envPreservation, aes(x = countryOrdered, y = perceptions_about_government_actions_to_preserve_the_environment_satisfied_2007_2013, ymax = max(perceptions_about_government_actions_to_preserve_the_environment_satisfied_2007_2013), fill = hdi_classification)) + 
+ggplot(data = envPreservation, aes(x = countryOrdered, y = perceptions_about_government_actions_to_preserve_the_environment_satisfied_2007_2013, ymax = max(perceptions_about_government_actions_to_preserve_the_environment_satisfied_2007_2013), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_about_government_actions_to_preserve_the_environment_satisfied_2007_2013), position = position_dodge(width = 0.9), vjust = 20) +
@@ -275,7 +275,7 @@ ggplot(data = envPreservation, aes(x = countryOrdered, y = perceptions_about_gov
   scale_y_continuous(breaks = seq(from = 40, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Perceptions about government preserving environment") +
-  geom_hline(yintercept = envPreservationSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = envPreservationSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 4, 49, label = "Environment preservation perception average", colour = "black", fontface = "bold")
 
 # Explore perception about health care quality: Select top 12
@@ -289,7 +289,7 @@ healthCare$countryOrdered <- reorder(healthCare$country, desc(healthCare$percept
 
 healthCareSatisMean <- mean(final_dataset$perceptions_of_individual_well_being_health_care_quality_satisfied_2008_2012, na.rm = TRUE)
 
-ggplot(data = healthCare, aes(x = countryOrdered, y = perceptions_of_individual_well_being_health_care_quality_satisfied_2008_2012, ymax = max(perceptions_of_individual_well_being_health_care_quality_satisfied_2008_2012), fill = hdi_classification)) + 
+ggplot(data = healthCare, aes(x = countryOrdered, y = perceptions_of_individual_well_being_health_care_quality_satisfied_2008_2012, ymax = max(perceptions_of_individual_well_being_health_care_quality_satisfied_2008_2012), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_of_individual_well_being_health_care_quality_satisfied_2008_2012), position = position_dodge(width = 0.9), vjust = 20) +
@@ -298,7 +298,7 @@ ggplot(data = healthCare, aes(x = countryOrdered, y = perceptions_of_individual_
   scale_y_continuous(breaks = seq(from = 50, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Perceptions about health care quality") +
-  geom_hline(yintercept = healthCareSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = healthCareSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 4, 54, label = "Health care quality perception average", colour = "black", fontface = "bold")
 
 # Explore perception about community trusting others: Select top 12
@@ -312,7 +312,7 @@ trustOthers$countryOrdered <- reorder(trustOthers$country, desc(trustOthers$perc
 
 trustOthersSatisMean <- mean(final_dataset$perceptions_about_community_trust_in_other_people_answering_can_be_trusted_2009_2011, na.rm = TRUE)
 
-ggplot(data = trustOthers, aes(x = countryOrdered, y = perceptions_about_community_trust_in_other_people_answering_can_be_trusted_2009_2011, ymax = max(perceptions_about_community_trust_in_other_people_answering_can_be_trusted_2009_2011), fill = hdi_classification)) + 
+ggplot(data = trustOthers, aes(x = countryOrdered, y = perceptions_about_community_trust_in_other_people_answering_can_be_trusted_2009_2011, ymax = max(perceptions_about_community_trust_in_other_people_answering_can_be_trusted_2009_2011), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = perceptions_about_community_trust_in_other_people_answering_can_be_trusted_2009_2011), position = position_dodge(width = 0.9), vjust = 8) +
@@ -321,7 +321,7 @@ ggplot(data = trustOthers, aes(x = countryOrdered, y = perceptions_about_communi
   scale_y_continuous(breaks = seq(from = 15, to = 100, by = 5)) +
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Perceptions about community trusting other people") +
-  geom_hline(yintercept = trustOthersSatisMean, colour = "black", linetype = "dotted") + 
+  geom_hline(yintercept = trustOthersSatisMean, colour = "black", linetype = "dotted") +
   annotate("text", 4, 22, label = "Community trust perception average", colour = "black", fontface = "bold")
 
 # Obtain a dataset with complete cases only.
@@ -342,7 +342,7 @@ complete <- complete_cases_dataset %>%
 
 complete$countryOrdered <- reorder(complete$country, desc(complete$total_score))
 
-ggplot(data = complete, aes(x = countryOrdered, y = total_score, ymax = max(total_score), fill = hdi_classification)) + 
+ggplot(data = complete, aes(x = countryOrdered, y = total_score, ymax = max(total_score), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = total_score), position = position_dodge(width = 0.9), vjust = 15) +
@@ -361,7 +361,7 @@ non_na_top <- non_na_overall_index_dataset %>%
 
 non_na_top$countryOrdered <- reorder(non_na_top$country, desc(non_na_top$total_score))
 
-ggplot(data = non_na_top, aes(x = countryOrdered, y = total_score, ymax = max(total_score), fill = hdi_classification)) + 
+ggplot(data = non_na_top, aes(x = countryOrdered, y = total_score, ymax = max(total_score), fill = hdi_classification)) +
   geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
   geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
   geom_text(aes(label = number_of_nas), position = position_dodge(width = 0.9), vjust = -2.5, colour = "blue", fontface = "bold") +
@@ -372,12 +372,13 @@ ggplot(data = non_na_top, aes(x = countryOrdered, y = total_score, ymax = max(to
   xlab("Country") + ylab("Percentage of positive responses") +
   ggtitle("Total positive perception scores (incl. categories w/NA values)")
 
+
+# Explore the correlations between HDI rank and the different perceptions.
 library(GGally)
 
 final_dataset <- final_dataset %>% mutate(hdi_classification = hdi_ranges[hdi_rank])
 
 lm_eqn <- function(m) {
-
   l <- list(a = format(coef(m)[1], digits = 2),
     b = format(abs(coef(m)[2]), digits = 2),
     r2 = format(summary(m)$r.squared, digits = 3));
@@ -385,38 +386,21 @@ lm_eqn <- function(m) {
   if (coef(m)[2] >= 0)  {
     eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
   } else {
-    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
+    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
   }
 
-  as.character(as.expression(eq));                 
+  as.character(as.expression(eq));
 }
 
 relevantColumns <- colnames(final_dataset)[3:15]
 
-plotCorrelation <- function(column) {
-  print(ggplot(final_dataset, aes(x = hdi_rank, y = column)) +
-    geom_smooth(method = "lm") +
-    geom_point(aes(color = hdi_classification)) +
-    geom_text(aes(x = 50, y = 100, label = lm_eqn(lm(column ~ hdi_rank, final_dataset))), parse = TRUE))
-}
-
+# Include a linear model in the graph with its equation and r-squared.
 for (i in 1:length(relevantColumns)) {
-  funCall = paste(relevantColumns[i], "~", "hdi_rank", collapse=" + ")
-  lmRes = do.call("lm", list(as.formula(funCall), data=as.name("final_dataset")))
-  print(ggplot(final_dataset, aes_string(x = "hdi_rank", y = relevantColumns[i])) +
+  funCall <- paste("hdi_rank", "~", relevantColumns[i], collapse=" + ")
+  lmRes <- do.call("lm", list(as.formula(funCall), data=as.name("final_dataset")))
+  g <- ggplot(final_dataset, aes_string(x = relevantColumns[i], y = "hdi_rank")) +
       geom_smooth(method = "lm") +
       geom_point(aes(color = hdi_classification)) +
-      geom_text(aes(x = 50, y = 100, label = lm_eqn(lmRes), parse = TRUE)))
+      geom_text(aes(-Inf, -Inf, hjust = 0, vjust = 0, label = lm_eqn(lmRes)), parse = TRUE)
+  print(g)
 }
-
-ggplot(final_dataset, aes(x = hdi_rank, y = perceptions_about_community_local_labour_market_answering_good_2007_2012)) +
-  geom_smooth(method = "lm") +
-  geom_point(aes(color = hdi_classification)) +
-  geom_text(aes(x = 50, y = 100, label = lm_eqn(lm(perceptions_about_community_local_labour_market_answering_good_2007_2012 ~ hdi_rank, final_dataset))), parse = TRUE)
-
-ggplot(final_dataset, aes(x = hdi_rank, y = perceptions_about_community_local_labour_market_answering_good_2007_2012)) +
-  geom_smooth(method = "lm") +
-  geom_point(aes(color = hdi_classification)) +
-  geom_text(aes(x = 50, y = 100, label = lm_eqn(lm(perceptions_about_community_local_labour_market_answering_good_2007_2012 ~ hdi_rank, final_dataset))), parse = TRUE)
-
-
