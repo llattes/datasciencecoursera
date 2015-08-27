@@ -1,0 +1,320 @@
+---
+title: "Perceptions of wellbeing"
+author: "Luciano Lattes"
+date: "August 16, 2015"
+output:
+  pdf_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache=TRUE)
+options(width=80)
+```
+
+# Introduction
+
+The following analysis is based on the **Perceptions of wellbeing** dataset included as supplementary indicators in the **Human Development Reports** of the *UN*. [Click here for further information.](http://hdr.undp.org/en/data)
+
+The main source of data for the **Perceptions of wellbeing** dataset is the **Gallup World Poll**, a global survey that tracks **the most important issues worldwide, such as food access, employment, leadership performance, and well-being**.
+
+For additional information about the **Gallup World Poll**, you can follow the links below:
+
+- [How Does the Gallup World Poll Work?](http://www.gallup.com/178667/gallup-world-poll-work.aspx)
+- [Country Data Set Details](http://www.gallup.com/services/177797/country-data-set-details.aspx)
+- [World Poll Methodology](http://www.gallup.com/poll/105226/world-poll-methodology.aspx)
+
+# About the data
+
+Each observation of the **perceptions of wellbeing** dataset used in this analysis has, apart from a given country and its global rank in the Human Development Index, columns with a numeric value representing a percentage of answers for the following survey questions:
+
+- **Satisfaction with education quality:** Percentage of respondents who answered "satisfied" to the Gallup World Poll question, "Are you satisfied or dissatisfied with the education system?"
+- **Satisfaction with health care quality:** Percentage of respondents who answered “satisfied” to the Gallup World Poll question, “Are you satisfied or dissatisfied with the availability of quality health care?”
+- **Satisfaction with standard of living:** Percentage of respondents answering "satisfied" to the Gallup World Poll question, "Are you satisfied or dissatisfied with your standard of living, all the things you can buy and do?"
+- **Satisfaction with job:** Percentage of respondents answering "satisfied" to the Gallup World Poll question, "Are you satisfied or dissatisfied with your job?"
+- **Perception of safety:** Percentage of respondents answering "yes" to the Gallup World Poll question, "Do you feel safe walking alone at night in the city or area where you live?"
+- **Satisfaction with freedom of choice:** Percentage of respondents answering "satisfied" to the Gallup World Poll question, "In this country, are you satisfied or dissatisfied with your freedom to choose what you do with your life?"
+- **Overall life satisfaction index:** Average response to the Gallup World Poll question: "Please imagine a ladder, with steps numbered from zero at the bottom to ten at the top. Suppose we say that the top of the ladder represents the best possible life for you, and the bottom of the ladder represents the worst possible life for you. On which step of the ladder would you say you personally feel you stand at this time, assuming that the higher the step the better you feel about your life, and the lower the step the worse you feel about it? Which step comes closest to the way you feel?"
+- **Trust in other people:** Percentage of respondents answering "can be trusted" to the Gallup World Poll question, "Generally speaking, would you say that most people can be trusted or that you have to be careful in dealing with people?"
+- **Satisfaction with community:** Percentage of respondents answering "yes" to the Gallup World Poll question, "Are you satisfied or dissatisfied with the city or area where you live?"
+- **Satisfaction with efforts to deal with the poor:** Percentage of respondents who answered "satisfied" to Gallup World Poll question, "In this country, are you satisfied or dissatisfied with efforts to deal with the poor?"
+- **Satisfaction with actions to preserve the environment:** Percentage of respondents answering "satisfied" to Gallup World Poll question: "In this country, are you satisfied or dissatisfied with the efforts to preserve the environment?"
+- **Trust in national government:** Percentage of respondents answering "yes" to the Gallup World Poll question, "In this country, do you have confidence in the national government?"
+- **Satisfaction with local labour market:** Percentage of respondents answering "good" to Gallup World Poll question, "Thinking about the job situation in the city or area where you live today, would you say that it is now a good time or a bad time to find a job?"
+
+# Source code
+
+## Obtain and cleanup the data
+
+The dataset is retrieved from the UNDP public API and pre-processed in order to get it ready for the analysis. 
+
+```{r, results='hide'}
+library(httr)
+library(jsonlite)
+library(dplyr)
+library(ggplot2)
+library(GGally)
+
+# Get data from UNDP API.
+rawApiData <- GET(url = "https://data.undp.org/resource/p79w-icq5.json")
+# Transform content to JSON and parse it back as data frame.
+apiData <- jsonlite::fromJSON(toJSON(content(rawApiData), auto_unbox = TRUE))
+dplyrApiData <- tbl_df(apiData)
+# Remove unnecessary columns from the API data.
+dplyrApiData <- select(dplyrApiData, country, hdi_rank, starts_with("perceptions"))
+# Filter all the rows without Human Development Index rank (these rows do not
+# represent actual countries).
+filtered <- dplyrApiData %>% filter(hdi_rank != "NULL")
+# Transform all dot dot values into NA.
+filtered[filtered == ".."] <- NA
+# Transform HDI rank and perception indices into numeric columns.
+final_dataset <- mutate_each(filtered, funs(as.numeric), hdi_rank,
+    starts_with("perceptions"))
+# According to original data, the following is the HDI index classification by rank:
+#   [1 50):    Very High Human Development Index
+#   [50 103):  High HDI
+#   [103 145): Medium HDI
+#   145+:      Low HDI
+hdi_ranges <- cut(x = range(final_dataset$hdi_rank)[1]:range(final_dataset$hdi_rank)[2],
+    breaks = c(0, 49, 102, 144, range(final_dataset$hdi_rank)[2]),
+    labels = c("Very high HDI", "High HDI", "Medium HDI", "Low HDI"))
+# Remove unused variables from environment.
+rm("rawApiData", "apiData", "dplyrApiData", "filtered")
+```
+
+Rename all column names for the sake of code simplicity.
+
+```{r, results='hide', tidy=TRUE}
+final_dataset <- rename(final_dataset, local_labour_market = perceptions_about_community_local_labour_market_answering_good_2007_2012)
+final_dataset <- rename(final_dataset, community = perceptions_about_community_community_answering_yes_2007_2012)
+final_dataset <- rename(final_dataset, preserve_the_environment = perceptions_about_government_actions_to_preserve_the_environment_satisfied_2007_2013)
+final_dataset <- rename(final_dataset, job_satisfied = perceptions_of_individual_well_being_job_satisfied_2007_2012)
+final_dataset <- rename(final_dataset, trust_in_national_government = perceptions_about_government_trust_in_national_government_satisfied_2007_2013)
+final_dataset <- rename(final_dataset, education_quality = perceptions_of_individual_well_being_education_quality_satisfied_2012)
+final_dataset <- rename(final_dataset, standard_of_living = perceptions_of_individual_well_being_standard_of_living_satisfied_2007_2013)
+final_dataset <- rename(final_dataset, freedom_of_choice = perceptions_of_individual_well_being_freedom_of_choice_satisfied_2007_2012)
+final_dataset <- rename(final_dataset, safety = perceptions_of_individual_well_being_safety_answering_yes_2007_2012)
+final_dataset <- rename(final_dataset, overall_life_satisfaction = perceptions_of_individual_well_being_overall_life_satisfaction_index_0_least_satisfied_10_most_satisfied_2007_2012)
+final_dataset <- rename(final_dataset, efforts_to_deal_with_the_poor = perceptions_about_government_efforts_to_deal_with_the_poor_satisfied_2007_2013)
+final_dataset <- rename(final_dataset, health_care_quality = perceptions_of_individual_well_being_health_care_quality_satisfied_2008_2012)
+final_dataset <- rename(final_dataset, trust_in_other_people = perceptions_about_community_trust_in_other_people_answering_can_be_trusted_2009_2011)
+```
+
+## Generate datasets for plotting
+
+A few secondary datasets are generated from the clean dataset obtained above. The idea is to evaluate which countries have the highest perception rating in each of the categories of the survey.
+
+```{r, results='hide'}
+# Explore overall life satisfaction index: Select top 12
+overall <- final_dataset %>%
+  arrange(desc(overall_life_satisfaction)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, overall_life_satisfaction) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+# Add a ordered column for pretty plots.
+overall$countryOrdered <- reorder(overall$country,
+    desc(overall$overall_life_satisfaction))
+# Calculate the overall mean of life satisfaction.
+overallSatisMean <- mean(final_dataset$overall_life_satisfaction, na.rm = TRUE)
+
+# Explore perception about government: Select top 12
+government <- final_dataset %>%
+  arrange(desc(trust_in_national_government)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank,trust_in_national_government) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+government$countryOrdered <- reorder(government$country,
+    desc(government$trust_in_national_government))
+
+governmentSatisMean <- mean(final_dataset$trust_in_national_government, na.rm = TRUE)
+
+# Explore perception about education quality: Select top 12
+education <- final_dataset %>%
+  arrange(desc(education_quality)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank,education_quality) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+education$countryOrdered <- reorder(education$country, desc(education$education_quality))
+
+educationSatisMean <- mean(final_dataset$education_quality, na.rm = TRUE)
+
+# Explore job satisfaction: Select top 12
+jobs <- final_dataset %>%
+  arrange(desc(job_satisfied)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, job_satisfied) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+jobs$countryOrdered <- reorder(jobs$country, desc(jobs$job_satisfied))
+
+jobsSatisMean <- mean(final_dataset$job_satisfied, na.rm = TRUE)
+
+# Explore local labour market satisfaction: Select top 12
+market <- final_dataset %>%
+  arrange(desc(local_labour_market)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, local_labour_market) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+market$countryOrdered <- reorder(market$country, desc(market$local_labour_market))
+
+marketSatisMean <- mean(final_dataset$local_labour_market, na.rm = TRUE)
+
+# Explore perception about community: Select top 12
+community <- final_dataset %>%
+  arrange(desc(community)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, community) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+community$countryOrdered <- reorder(community$country, desc(community$community))
+
+communitySatisMean <- mean(final_dataset$community, na.rm = TRUE)
+
+# Explore perception about freedom of choice: Select top 12
+freedom <- final_dataset %>%
+  arrange(desc(freedom_of_choice)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, freedom_of_choice) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+freedom$countryOrdered <- reorder(freedom$country, desc(freedom$freedom_of_choice))
+
+freedomSatisMean <- mean(final_dataset$freedom_of_choice, na.rm = TRUE)
+
+# Explore perception about safety: Select top 12
+safety <- final_dataset %>%
+  arrange(desc(safety)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, safety) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+safety$countryOrdered <- reorder(safety$country, desc(safety$safety))
+
+safetySatisMean <- mean(final_dataset$safety, na.rm = TRUE)
+
+# Explore perception about standard of living: Select top 12
+standard <- final_dataset %>%
+  arrange(desc(standard_of_living)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, standard_of_living) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+standard$countryOrdered <- reorder(standard$country, desc(standard$standard_of_living))
+
+standardSatisMean <- mean(final_dataset$standard_of_living, na.rm = TRUE)
+
+# Explore perception about government dealing with the poor: Select top 12
+dealWithPoor <- final_dataset %>%
+  arrange(desc(efforts_to_deal_with_the_poor)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, efforts_to_deal_with_the_poor) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+dealWithPoor$countryOrdered <- reorder(dealWithPoor$country,
+    desc(dealWithPoor$efforts_to_deal_with_the_poor))
+
+dealWithPoorSatisMean <- mean(final_dataset$efforts_to_deal_with_the_poor, na.rm = TRUE)
+
+# Explore perception about government preserving environment: Select top 12
+envPreservation <- final_dataset %>%
+  arrange(desc(preserve_the_environment)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, preserve_the_environment) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+envPreservation$countryOrdered <- reorder(envPreservation$country,
+    desc(envPreservation$preserve_the_environment))
+
+envPreservationSatisMean <- mean(final_dataset$preserve_the_environment, na.rm = TRUE)
+
+# Explore perception about health care quality: Select top 12
+healthCare <- final_dataset %>%
+  arrange(desc(health_care_quality)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, health_care_quality) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+healthCare$countryOrdered <- reorder(healthCare$country,
+    desc(healthCare$health_care_quality))
+
+healthCareSatisMean <- mean(final_dataset$health_care_quality, na.rm = TRUE)
+
+# Explore perception about community trusting others: Select top 12
+trustOthers <- final_dataset %>%
+  arrange(desc(trust_in_other_people)) %>%
+  filter(row_number() <= 12) %>%
+  select(country, hdi_rank, trust_in_other_people) %>%
+  mutate(hdi_classification = hdi_ranges[hdi_rank])
+
+trustOthers$countryOrdered <- reorder(trustOthers$country,
+    desc(trustOthers$trust_in_other_people))
+
+trustOthersSatisMean <- mean(final_dataset$trust_in_other_people, na.rm = TRUE)
+```
+
+# Plots
+
+The following plots rank the twelve countries with the highest scores in each survey question. The red number over the bar represents the HDI ranking of the country.
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+# Draw a plot with top 12 rank, overall mean and HDI rank.
+ggplot(data = overall, aes(x = countryOrdered, y = overall_life_satisfaction, ymax = max(overall_life_satisfaction), fill = hdi_classification)) +
+  geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
+  geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
+  geom_text(aes(label=overall_life_satisfaction), position = position_dodge(width = 0.9), vjust = 10) +
+  scale_fill_hue(name = "HDI classification") +
+  coord_cartesian(ylim = c(5, 10)) +
+  scale_y_continuous(breaks = seq(from = 5, to = 10, by = 0.2)) +
+  xlab("Country") + ylab("Satisfaction index (0: Least satisf. - 10: Most satisf.)") +
+  ggtitle("Overall life satisfaction") +
+  geom_hline(yintercept = overallSatisMean, colour = "black", linetype = "dotted") +
+  annotate("text", 3, 5.6, label = "Global satisfaction average", colour = "black", fontface = "bold") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+ggplot(data = government, aes(x = countryOrdered, y = trust_in_national_government, ymax = max(trust_in_national_government), fill = hdi_classification)) +
+  geom_bar(colour = "black", stat = "identity", position = position_dodge()) +
+  geom_text(aes(label = hdi_rank), position = position_dodge(width = 0.9), vjust = -0.5, colour = "red", fontface = "bold") +
+  geom_text(aes(label = trust_in_national_government), position = position_dodge(width = 0.9), vjust = 20) +
+  scale_fill_hue(name = "HDI classification") +
+  coord_cartesian(ylim = c(40, 100)) +
+  scale_y_continuous(breaks = seq(from = 40, to = 100, by = 5)) +
+  xlab("Country") + ylab("Percentage of positive responses") +
+  ggtitle("Trust in national government") +
+  geom_hline(yintercept = governmentSatisMean, colour = "black", linetype = "dotted") +
+  annotate("text", 3, 50, label = "Global trust average", colour = "black", fontface = "bold") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+```
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+```
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+```
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+```
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+```
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+```
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+```
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+```
+
+```{r, echo=FALSE, dpi=200, fig.height=8, fig.width=9}
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

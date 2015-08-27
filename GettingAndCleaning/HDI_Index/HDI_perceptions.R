@@ -16,7 +16,7 @@ filtered <- dplyrApiData %>% filter(hdi_rank != "NULL")
 filtered[filtered == ".."] <- NA
 # Transform HDI rank and perception indices into numeric columns.
 final_dataset <- mutate_each(filtered, funs(as.numeric), hdi_rank, starts_with("perceptions"))
-# According to original data, the following is the HDI index classification:
+# According to original data, the following is the HDI index classification by rank:
 #   [1 50):    Very High Human Development Index
 #   [50 103):  High HDI
 #   [103 145): Medium HDI
