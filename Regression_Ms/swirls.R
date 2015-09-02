@@ -47,3 +47,19 @@ dy <- predict(fitno, out2) - predict(fit, out2)
 sum(dy^2)/(2*sigma^2)
 cooks.distance(fit)[1]
 plot(fit, which=5)
+
+# Knots for fitting complex functions:
+x <- -5:5
+y <- c(5.12, 3.93, 2.67, 1.87, 0.52, 0.08, 0.93, 2.05, 2.54, 3.87, 4.97)
+plot(x, y, frame = FALSE, pch = 21, bg = "lightblue", cex = 2)
+knots <- c(0)
+splineTerms <- sapply(knots, function(knot) (x > knot) * (x - knot))
+xMat <- cbind(1, x, splineTerms)
+yhat <- predict(lm(y ~ xMat - 1))
+lines(x, yhat, col = "red", lwd = 2)
+# Add more knots and re-draw line.
+knots <- c(0, 2, 3, 4)
+splineTerms2 <- sapply(knots, function(knot) (x > knot) * (x - knot))
+xMat2 <- cbind(1, x, splineTerms2)
+yhat2 <- predict(lm(y ~ xMat2 - 1))
+lines(x, yhat2, col = "green", lwd = 2)
